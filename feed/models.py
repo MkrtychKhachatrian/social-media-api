@@ -11,23 +11,6 @@ class Hashtag(models.Model):
     name = models.CharField(max_length=63, unique=True)
 
 
-class Comment(models.Model):
-    text = models.TextField()
-    post = models.ForeignKey(to="Post", on_delete=models.CASCADE)
-
-    author = models.ForeignKey(
-        to=settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-    )
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        default_related_name = "comments"
-
-    def __str__(self):
-        return f"Comment on post {self.post.id}, created: {self.created_at}"
-
-
 class Post(models.Model):
     text = models.TextField()
     tags = models.ManyToManyField(to=Hashtag, related_name="posts", blank=True)
@@ -36,10 +19,6 @@ class Post(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="posts",
-    )
-    likes = models.ManyToManyField(
-        to=settings.AUTH_USER_MODEL,
-        related_name="likes",
     )
 
     class Meta:
