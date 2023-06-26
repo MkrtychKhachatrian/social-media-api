@@ -15,7 +15,7 @@ from feed.serializers import (
     PostSerializer,
     ProfileSerializer,
     PostListSerializer,
-    TagSerializer,
+    HashtagSerializer,
     ProfileListSerializer,
     ProfileDetailSerializer,
     ProfileImageSerializer,
@@ -23,7 +23,7 @@ from feed.serializers import (
 )
 
 
-class TagViewSet(
+class HashtagViewSet(
     viewsets.GenericViewSet,
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
@@ -31,7 +31,7 @@ class TagViewSet(
     mixins.UpdateModelMixin,
 ):
     queryset = Hashtag.objects.all()
-    serializer_class = TagSerializer
+    serializer_class = HashtagSerializer
     permission_classes = (IsAuthenticated,)
 
 
@@ -43,7 +43,7 @@ class PostViewSet(
     mixins.UpdateModelMixin,
     mixins.DestroyModelMixin,
 ):
-    queryset = Post.objects.prefetch_related("tags").select_related(
+    queryset = Post.objects.prefetch_related("hashtags").select_related(
         "user", "user__profile"
     )
     serializer_class = PostSerializer
@@ -58,11 +58,11 @@ class PostViewSet(
         following = self.request.user.profile.following.values("user")
         queryset = queryset.filter(Q(user=self.request.user) | Q(user__in=following))
         """Retrieve the posts with filters"""
-        tag = self.request.query_params.get("tag")
+        hashtag = self.request.query_params.get("hashtag")
         date = self.request.query_params.get("date")
 
-        if tag:
-            queryset = queryset.filter(tags__word__icontains=tag)
+        if hashtag:
+            queryset = queryset.filter(hashtags__name__icontains=hashtag)
 
         if date:
             date = datetime.strptime(date, "%Y-%m-%d").date()
@@ -87,9 +87,9 @@ class PostViewSet(
     @extend_schema(
         parameters=[
             OpenApiParameter(
-                "tag",
+                "hashtag",
                 type=OpenApiTypes.INT,
-                description="Filter posts by tag (ex. ?tag=happy)",
+                description="Filter posts by hashtag (ex. ?hashtag=happy)",
             ),
             OpenApiParameter(
                 "date",
@@ -150,7 +150,7 @@ class ProfileViewSet(
             OpenApiParameter(
                 "username",
                 type=OpenApiTypes.INT,
-                description="Filter profiles by username (ex. ?username=happy_kitten)",
+                description="Filter profiles by username (ex. ?username=bob_123)",
             ),
             OpenApiParameter(
                 "city",

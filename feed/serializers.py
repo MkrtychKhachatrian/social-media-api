@@ -3,30 +3,30 @@ from rest_framework import serializers
 from feed.models import Post, Hashtag, Profile
 
 
-class TagSerializer(serializers.ModelSerializer):
+class HashtagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Hashtag
         fields = (
             "id",
-            "word",
+            "name",
         )
 
 
-class TagListSerializer(TagSerializer):
+class HashtagListSerializer(HashtagSerializer):
     class Meta:
         model = Hashtag
         fields = (
             "id",
-            "word",
+            "name",
         )
 
 
-class TagDetailSerializer(TagSerializer):
+class HashtagDetailSerializer(HashtagSerializer):
     class Meta:
         model = Hashtag
         fields = (
             "id",
-            "word",
+            "name",
             "posts",
         )
 
@@ -34,7 +34,7 @@ class TagDetailSerializer(TagSerializer):
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ["id", "user", "text", "created_at", "tags"]
+        fields = ["id", "user", "text", "created_at", "hashtags"]
         read_only_fields = ["id", "created_at"]
 
 
@@ -45,14 +45,15 @@ class PostListSerializer(PostSerializer):
         model = Post
         fields = (
             "id",
-            "text_preview",
             "created_at",
             "user",
         )
 
 
 class PostDetailSerializer(PostSerializer):
-    tags = serializers.SlugRelatedField(many=True, read_only=True, slug_field="word")
+    hashtags = serializers.SlugRelatedField(
+        many=True, read_only=True, slug_field="name"
+    )
     user = serializers.CharField(source="user.profile.username", read_only=True)
 
     class Meta:
@@ -60,7 +61,7 @@ class PostDetailSerializer(PostSerializer):
         fields = (
             "id",
             "text",
-            "tags",
+            "hashtags",
             "created_at",
             "user",
         )

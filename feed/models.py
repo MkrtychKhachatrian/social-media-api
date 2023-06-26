@@ -13,7 +13,7 @@ class Hashtag(models.Model):
 
 class Post(models.Model):
     text = models.TextField()
-    tags = models.ManyToManyField(to=Hashtag, related_name="posts", blank=True)
+    hashtags = models.ManyToManyField(to=Hashtag, related_name="posts", blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
