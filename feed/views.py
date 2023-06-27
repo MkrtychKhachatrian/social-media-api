@@ -10,6 +10,7 @@ from rest_framework.response import Response
 
 
 from feed.models import Post, Profile, Hashtag
+from feed.pagination import PostsPagination
 from feed.permissions import IsOwnerOrReadOnly
 from feed.serializers import (
     PostSerializer,
@@ -47,6 +48,7 @@ class PostViewSet(
         "user", "user__profile"
     )
     serializer_class = PostSerializer
+    pagination_class = PostsPagination
     permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
 
     def perform_create(self, serializer):
